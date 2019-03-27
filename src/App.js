@@ -1,26 +1,21 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Scorocode from 'scorocode';
+import MainContainer from './containers/main';
+import { store } from './store/configure-store';
+import { Provider } from 'react-redux';
 
 class App extends Component {
   render() {
+    Scorocode.Init({
+      ApplicationID: "3196b2e873234547ad8b06ed636d3538",
+      JavaScriptKey: "5e85f685a23e44e6abad95accc1dd2ea",
+      MasterKey:     "659d718ff9664f6fafbdb79efc93cb34"
+    });
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <Provider store={store}>
+        <MainContainer />
+      </Provider>
     );
   }
 }
