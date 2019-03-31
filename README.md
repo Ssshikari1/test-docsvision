@@ -1,5 +1,6 @@
-Перед ```npm i``` следует снизить версию node, иначе Scorocode не устанавливается.
-Снизил до v8.10.0
+## Перед ```npm i``` 
+следует снизить версию node, иначе Scorocode не устанавливается.
+Я это сделал до v8.10.0
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
