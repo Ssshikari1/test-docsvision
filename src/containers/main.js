@@ -15,9 +15,11 @@ class MainContainer extends Component {
     super(props);
     this.state = {
       currentPlacement: '',
+      lastChilds: []
     };
     this.handleItem = this.handleItem.bind(this);
     let equipments;
+    let isLastChild = false;
   }
 
   componentDidMount() {
@@ -25,14 +27,18 @@ class MainContainer extends Component {
     this.props.getEquipments();
   }
 
-  handleItem(item) {
+  handleItem(item, lastChilds) {
     this.setState({
-      currentPlacement: item
+      currentPlacement: item,
+      lastChilds: lastChilds
     });
   }
 
-  searchEquipmentsInPlacement(nextState) {
-    const equipments = this.props.equipment.data;
+  searchEquipmentsInPlacement(nextProps, nextState) {
+    if (!nextProps.equipment.data) {
+      return;
+    }
+    const equipments = nextProps.equipment.data;
     const eq = equipments.filter(x => { 
       if (x.room) {
         if (nextState.currentPlacement === "FG7pRodZNF") {
@@ -41,15 +47,19 @@ class MainContainer extends Component {
         if (nextState.currentPlacement === "CacR5AWhfr") {
           return x.room.indexOf("b2") !== -1;
         }
-        return x.room.indexOf(nextState.currentPlacement) !== -1;
+        if (nextState.currentPlacement !== "") {
+          return x.room.indexOf(nextState.currentPlacement) !== -1;
+        }
       }
      });
+    this.isLastChild = nextState.lastChilds.indexOf(nextState.currentPlacement) !== -1 ? true : false;
     this.equipments = eq;
   }
 
   componentWillUpdate(nextProps, nextState) {
-    if (nextState.currentPlacement !== this.state.currentPlacement) {
-      this.searchEquipmentsInPlacement(nextState);
+    if (nextState.currentPlacement !== this.state.currentPlacement
+      || nextProps.equipment !== this.props.equipment) {
+      this.searchEquipmentsInPlacement(nextProps, nextState);
     }
   }
 
@@ -58,10 +68,13 @@ class MainContainer extends Component {
       <div className="wrap">
         <Row>
           <Col md={3}>
-            <LeftPanel building={this.props.building} capturePlacement={this.handleItem} />
+            <LeftPanel building={this.props.building}
+             capturePlacement={this.handleItem} fillLastChilds={this.fillLastChilds}/>
           </Col>
           <Col md={9}>
-              <RightPanel equipments={this.equipments}  />
+              <RightPanel equipments={this.equipments} createEquipment={this.props.createEquipment} 
+              room={this.state.currentPlacement} isLastChild={this.isLastChild}
+              updateEquipment={this.props.updateEquipment} deleteEquipment={this.props.deleteEquipment} />
           </Col>
         </Row>
       </div>
@@ -80,6 +93,9 @@ const mapDispatchToProps = dispatch => {
   return {
     getBuildings: () => dispatch(buildingAction.get()),
     getEquipments: () => dispatch(equipmentAction.get()),
+    updateEquipment: (data) => dispatch(equipmentAction.update(data)),
+    deleteEquipment: (id) => dispatch(equipmentAction.delete(id)),
+    createEquipment: (data) => dispatch(equipmentAction.create(data))
   }
 }
 

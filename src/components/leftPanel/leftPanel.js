@@ -1,26 +1,31 @@
 import React, {Component} from 'react';
 
-import RightPanel from '../rightPanel/rightPanel';
-
 import './left-panel.css';
 
 export default class LeftPanel extends Component {
 
+  
+
   constructor(props) {
     super(props);
+
+    this.lastChilds = [];
   }
 
   placementChoiceHandler(item, event) {
     event.stopPropagation();
-    this.props.capturePlacement(item);
-
+    this.props.capturePlacement(item, this.lastChilds);
+    const listItems = document.querySelectorAll('.list li');
+    for (let i = 0; i < listItems.length; i++) {
+      alert (listItems[i].textContent);
+    }
   }
 
   listBuildings() {
     return this.props.building.data.map(x => {
       return (
-        <li onClick={this.placementChoiceHandler.bind(this, x._id)} key={x._id}>
-          {x.name}
+        <li key={x._id}>
+          <span onClick={this.placementChoiceHandler.bind(this, x._id)} >{x.name}</span>
           <ul>
             {this.listRooms(x)}
           </ul>
@@ -34,13 +39,13 @@ export default class LeftPanel extends Component {
     if (item.rooms) {
       return item.rooms.map(x => {
         return(
-          <li onClick={this.placementChoiceHandler.bind(this, x.id)} key={x.id}>
-            {x.name}
+          <li key={x.id}>
+            <span onClick={this.placementChoiceHandler.bind(this, x.id)} >{x.name}</span>
             {x.children ?
               <ul>
                 {this.listRooms(x)}
               </ul>
-              : null
+              : this.noChild(x)
             }
           </li>
         );
@@ -48,18 +53,25 @@ export default class LeftPanel extends Component {
     } else {
       return item.children.map(x => {
         return(
-          <li onClick={this.placementChoiceHandler.bind(this, x.id)} key={x.id}>
-            {x.name}
+          <li key={x.id}>
+            <span onClick={this.placementChoiceHandler.bind(this, x.id)} >{x.name}</span>
             {x.children ?
               <ul>
                 {this.listRooms(x)}
               </ul>
-              : null
+              : this.noChild(x)
             }
           </li>
         );
       });
     }
+  }
+
+  noChild(x) {
+    if (this.lastChilds.indexOf(x.id) === -1) {
+      this.lastChilds.push(x.id);
+    }
+    return null;
   }
 
   // listChildrens(room) {
@@ -83,7 +95,7 @@ export default class LeftPanel extends Component {
     return (
       <div className="left-panel">
         <h4>НекаяОрганизация</h4>
-        <ul>
+        <ul className="list-buildings">
           {building.data.length ? this.listBuildings() : null}
         </ul>
       </div>

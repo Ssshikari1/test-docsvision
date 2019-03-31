@@ -40,20 +40,20 @@ export default {
     }
   },
 
-  create: (name, room, count) => {
+  create: (data) => {
     return dispatch => {
       dispatch({
         type: types.CREATE_EQUIPMENT_REQUEST
       });
 
       let comp = new Scorocode.Object("equipment");
-      comp.set("name", name);
-      comp.set("room", room); // значение поля id комнаты
-      comp.set("count", count);
+      comp.set("name", data.name);
+      comp.set("room", data.room); // значение поля id комнаты
+      comp.set("count", data.count);
       comp.save().then(x => {
         dispatch({
           type: types.CREATE_EQUIPMENT_SUCCESS,
-          payload: x.result
+          payload: x
         });
       }).catch(e => {
         dispatch({
@@ -64,7 +64,7 @@ export default {
     }
   },
 
-  update: (id, name, count) => {
+  update: (data) => {
     return dispatch => {
       dispatch({
         type: types.UPDATE_EQUIPMENT_REQUEST,
@@ -72,11 +72,11 @@ export default {
 
       let equip = new Scorocode.Object("equipment");
       // Вместо nklHmg6naO значение поля _id 
-      equip.set("_id", id).set("name", name). set("count", count);
+      equip.set("_id", data.id).set("name", data.name). set("count", data.count);
       equip.save().then((x) => {
         dispatch({
           type: types.UPDATE_EQUIPMENT_SUCCESS,
-          payload: x.result
+          payload: x
         });
       }).catch(e => {
         dispatch({
@@ -96,10 +96,10 @@ export default {
       let equip = new Scorocode.Object("equipment");
       // Вместо ZfPnb0TKwq значение поля _id
       equip.getById(id).then((item) => {
-        equip.remove(item).then((x) => {
+        equip.remove(item).then(() => {
           dispatch({
             type: types.DELETE_EQUIPMENT_SUCCESS,
-            payload: x.result
+            payload: id
           });
         }).catch(e => {
           dispatch({
